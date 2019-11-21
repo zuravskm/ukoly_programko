@@ -1,0 +1,189 @@
+# Výpočet Marinova, Lambertova, Braunova a Mercartorova zobrazení
+
+from math import radians, sin, tan, log
+
+# zadání zobrazení
+# pokud uživatel zadá x program nahlásí chybu a skončí
+# pokud uživetel zadá jiné písmeno, program ho upozorní a skončí
+zobrazeni = input("Zadej počáteční písmeno zobrazení:")
+if zobrazeni not in ["A", "B", "L", "M"]:
+    print("Zadej správné počáteční písmeno zobrazení!")
+    quit()
+
+# volitelný poloměr Země
+# vrací zadaný poloměr přepočtený na cm
+# pokud uživatel zadá 0, je poloměr roven 6371,11 km
+# pokud zadá záporné číslo, program nahlásí chybu a skončí
+polomer_km = float(input("Zadej poloměr Země v km (s desetinnou tečkou), nebo 0 pro poloměr 6371.11:"))
+polomer_cm = polomer_km*100000
+if polomer_cm == 0:
+    polomer_cm = 637111000
+elif polomer_cm < 0:
+    print("Zadej správný poloměr Země!")
+    quit()
+
+# zadávání měřítka
+# funkce vrací zadané měřítko
+# pokud uživatel zadá záporné nebo nulové měřítko, pogram nahlásí chybu
+meritko = int(input("Zadej měřítko (z tvaru 1:m zadej pouze číslo m):"))
+if meritko <= 0:
+    print("Zadej správně měřítko!")
+    quit()
+
+seznam_rovnobezky = []
+seznam_poledniky = []
+
+# výpočet poledníků je shodný pro všechna zobrazení
+# vstupem je zadané poloměr a měřítko
+# vrací vypočtenou hodnotu s přesností na milimetry (proměnná x)
+def vypocet_poledniky(polomer_cm, meritko):
+    x = float()
+    for zem_delka in range(-180, 190, 10):
+        x = (round((polomer_cm*((radians(zem_delka)))/meritko),1)) # zaokrouhleno na 1 des. místo
+        if x <= -100.0 or x >= 100.0:
+            seznam_poledniky.append("-")
+            # ošetření chybových hlášek při překročení vzdálenosti 1 m mezi přímkami sítě souřadnic
+        else:
+            seznam_poledniky.append(x)
+
+
+# 4 funkce na výpočet rovnoběžek dle zadaného zobrazení
+# vstupem je zadané poloměr a měřítko
+# výstupem je hodnota s přesností na milimetry (proměnná y)
+
+def Marin_rovnobezky(polomer_cm, meritko):
+    y = float()
+    for zem_sirka in range(-90, 100, 10):
+        y = (round((polomer_cm*((radians(zem_sirka)))/meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            seznam_rovnobezky.append("-")
+        else:
+            seznam_rovnobezky.append(y)
+
+def Lambert_rovnobezky(polomer_cm, meritko):
+    y = float()
+    for zem_sirka in range(-90, 100, 10):
+        y = (round((polomer_cm*(sin(radians(zem_sirka)))/meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            seznam_rovnobezky.append("-")
+        else:
+            seznam_rovnobezky.append(y)
+
+def Braun_rovnobezky(polomer_cm, meritko):
+    y = float()
+    for zem_sirka in range(-90, 100, 10):
+        y = (round((polomer_cm * (tan(((radians(zem_sirka)))/2))/meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            seznam_rovnobezky.append("-")
+        else:
+            seznam_rovnobezky.append(y)
+
+def Mercator_rovnobezky(polomer_cm, meritko):
+    y = float()
+    for zem_sirka in range(-80, 90, 10):  # problém s 90°, proto jen do 80°
+        y = (round((polomer_cm*(log(1/(tan(radians((90-zem_sirka)/2)))))/meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            seznam_rovnobezky.append("-")
+        else:
+            seznam_rovnobezky.append(y)
+
+# funkce, která volá jednotlivé funkce na výpočet poledníků a rovnoběžek definované výše dle požadovaného zobrazení
+# vstupem je zobrazení
+def vypocti_zvolene_zobrazeni(zobrazeni):
+    if zobrazeni == "A":
+        Marin_rovnobezky(polomer_cm, meritko)
+        vypocet_poledniky(polomer_cm, meritko)
+        return
+    elif zobrazeni == "L":
+        Lambert_rovnobezky(polomer_cm, meritko)
+        vypocet_poledniky(polomer_cm, meritko)
+        return
+    elif zobrazeni == "B":
+        Braun_rovnobezky(polomer_cm, meritko)
+        vypocet_poledniky(polomer_cm, meritko)
+        return
+    elif zobrazeni == "M":
+        Mercator_rovnobezky(polomer_cm, meritko)
+        vypocet_poledniky(polomer_cm, meritko)
+        return
+vypocti_zvolene_zobrazeni(zobrazeni)
+
+# vypsání výsledků pomocí volání funkce print()
+# je zde ošetřen vstup poloměru 0 pro defaultně nastavený poloměr 6371.11 km
+
+print("Zadané zobrazení:", zobrazeni)
+# ošetřen výsledný výstup poloměru ve správných jednotkách
+if polomer_km == 0:
+    print("Zadaný poloměr Země je: 6371.11 km")
+else:
+    print("Zadaný poloměr Země je:", polomer_km, "km")
+print("Zadané měřítko je: 1 :", meritko)
+print("Rovnoběžky:", seznam_rovnobezky)
+print("Poledníky:", seznam_poledniky)
+
+
+# výpočet souřadnic libovolných bodů
+# využívá zadané vstupy na začítku programu: zobrazení, poloměr a měřítko
+# vstupem je zadání zeměpisné šířky a zeměpisné délky bodu
+
+# funkce, která dle zadaného zobrazení vypočte vzdálenost od bodu [0,0] po svislé ose
+# vstupem je zeměpisná šířka, zobrazení, poloměr a měřítko
+def vypocti_zem_sirku_bodu(bod_zem_sirka, zobrazeni, polomer_cm, meritko):
+    y = float()
+    if zobrazeni == "A":
+        y = (round((polomer_cm * ((radians(bod_zem_sirka))) / meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            souradnice_bodu.append("-")
+        else:
+            souradnice_bodu.append(y)
+    elif zobrazeni == "B":
+        y = (round((polomer_cm * (sin(radians(bod_zem_sirka))) / meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            souradnice_bodu.append("-")
+        else:
+            souradnice_bodu.append(y)
+    elif zobrazeni == "L":
+        y = (round((polomer_cm * (tan(((radians(bod_zem_sirka))) / 2)) / meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            souradnice_bodu.append("-")
+        else:
+            souradnice_bodu.append(y)
+    elif zobrazeni == "M":
+        y = (round((polomer_cm * (log(1 / (tan(radians((90 - bod_zem_sirka) / 2))))) / meritko), 1))
+        if y <= -100.0 or y >= 100.0:
+            souradnice_bodu.append("-")
+        else:
+            souradnice_bodu.append(y)
+
+# funkce, která vypočte vzdálenost od bodu [0,0] po vodorovné ose
+# vstupem je zeměpisná délka, poloměr a měřítko
+def vypocti_zem_delku_bodu(bod_zem_delka, polomer_cm, meritko):
+    x = float()
+    x = (round((polomer_cm * ((radians(bod_zem_delka))) / meritko), 1))
+    if x <= -100.0 or x >= 100.0:
+        souradnice_bodu.append("-")
+    else:
+        souradnice_bodu.append(x)
+
+# volání výše definovaných funkcí a vypsání jejich výstupu v podobě seznamu
+# nekonečný while cyklus se ptá, dokud není zadán bod [0,0], po jeho zadání skončí
+# řeč´ší nesprávné vstupy - chybně zadané stupně a nepočítá s 90° při výpočtu Mercatorova zobrazení
+while True:
+    bod_zem_sirka = int(input("Zadej zeměpisnou šířku bodu:"))
+    bod_zem_delka = int(input("Zadej zeměpisnou délku bodu:"))
+    souradnice_bodu = []
+    if bod_zem_sirka > 90 or bod_zem_sirka < -90:
+        print("Zadaná nesprávná zeměpisná šířka! Zadej znovu.")
+        continue
+    elif bod_zem_delka > 180 or bod_zem_delka < -180:
+        print("Zadaná nesprávná zeměpisná délka! Zadej znovu.")
+        continue
+    elif zobrazeni == "M" and (bod_zem_sirka >= 90 or bod_zem_sirka <= -90):
+        print("Chyba")
+        continue
+    elif bod_zem_sirka == 0 and bod_zem_delka == 0:
+        print("Zadaný bod [0,0], konec programu.")
+        quit()
+    vypocti_zem_sirku_bodu(bod_zem_sirka, zobrazeni, polomer_cm, meritko)
+    vypocti_zem_delku_bodu(bod_zem_delka, polomer_cm, meritko)
+    print("Souřadnice zadaného bodu jsou:", souradnice_bodu)
