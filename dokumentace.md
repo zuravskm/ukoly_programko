@@ -44,7 +44,7 @@ než -100 cm, vypíše program místo hodnoty "-".
 Výpočet rovnoběžek se liší dle požadovaného zobrazení, proto jsou zde definovány
 celkem 4 funkce. Všechny ale fungují na stejném proncipu jako výpočet poledníků. 
 Opět je zde zase for cyklus, který bere z intervalu od -90 do 100 stupňů hodnoty
-po deseti. Pouze u výpočtu Mercatorova zobrazení je interval omezen na -80 až 90
+po deseti. Pouze u výpočtu Mercatorova zobrazení je interval omezen na -80 až 80
 stupňů, neboť v 90 stupních se blíží tyto hodnoty do nekonečna. Výsledky jsou taktéž
 uvedeny s přesností na milimetry. Pro hodnoty větší než 100 a menší než -100 program 
 opět vypisuje "-". 
