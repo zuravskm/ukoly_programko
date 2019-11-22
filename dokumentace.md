@@ -85,8 +85,8 @@ Po úspěšném proběhnutí základního běhu programu se program uživatele z
 (zeměpisnou šířku a zeměpisnou délku) libovolného bodu. Ty jsou pak dle na začátku zvoleného 
 zobrazení, poloměru a měřítka přepočteny. 
 
-Opakované dotazování uživatele na vstup ja zajištěno pomocí nekonečného while cyklu, 
+Opakované dotazování uživatele na vstup je zajištěno pomocí nekonečného while cyklu, 
 ve kterém jsou podmínkami ošetřeny nekorektní vstupy od uživatele. Pokud uživatel zadá 
 zeměpisnou délku nebo šířku v nesprávných stupních, vydá hlášku a ptá se znovu na vstup. 
-Taktéž pokud při výpočtu dle Mercatorova zobrazení nepovoluje vstup větší nebo roven 90°, 
-respektive - 90°. Pokud uživatel zadá jako vstup  bod o souřadnicích [0,0], program skončí. 
+Taktéž při výpočtu Mercatorova zobrazení nepovoluje vstup větší nebo roven 90°, respektive - 90°. 
+Pokud uživatel zadá jako vstup bod o souřadnicích [0,0], program skončí. 
